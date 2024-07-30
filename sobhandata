@@ -1,0 +1,44 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import statsmodels.api as sm
+
+def check_outliers(data):
+  """
+  This function calculates IQR-based outliers in a pandas DataFrame.
+
+  Args:
+      data: A pandas DataFrame containing the data to analyze.
+
+  Returns:
+      A pandas DataFrame containing the identified outliers.
+  """
+  Q1 = data.quantile(0.25)
+  Q3 = data.quantile(0.75)
+  IQR = Q3 - Q1
+  lower_bound = Q1 - 1.5 * IQR
+  upper_bound = Q3 + 1.5 * IQR
+
+  outliers = data[(data < lower_bound) | (data > upper_bound)]
+  if outliers.empty:
+    print("No outliers found.")
+  else:
+    print("Outliers found:")
+    print(outliers)
+  return outliers
+
+# Read data from Excel file
+data = pd.read_excel("sobhan.xlsx", header=None)  # Replace "sobhan.xlsx" with your file path
+
+# Extract data to analyze (all rows except the first in the fifth column)
+data_to_analyze = data.iloc[1:, 4]
+
+# Check for outliers
+outliers_df = check_outliers(data_to_analyze)
+
+# Analyze outliers (if desired)
+if not outliers_df.empty:
+  print("Analyzing outliers:")
+  #Optional: Create Q-Q plot for the desired data
+sm.qqplot(data_to_analyze, line='s')  # Analyze Q-Q plot for the data from all rows except the first
+plt.show()
